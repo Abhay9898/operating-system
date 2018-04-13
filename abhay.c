@@ -1,67 +1,71 @@
-#include<stdio.h> 
- #include<conio.h>
- #include<math.h>      
-
- 
-int main() 
-{ 
-      int i, n, total = 0, x, counter = 0, time_quantum; 
-      int wa_ti = 0, tu_ti = 0, arr_ti[10], bur_ti[10], temp[10]; 
-      float avg_wa_ti, average_tu_ti;
-      printf("\nEnter Total Number of Processes:\t"); 
-      scanf("%d", &n); 
-      x = n; 
-      for(i = 0; i < n; i++) 
-      {
-            printf("\nEnter Details of Process[%d]\n", i + 1);
-            printf("Arrival Time:\t");
-            scanf("%d", &arr_ti[i]);
-            printf("Burst Time:\t");
-            scanf("%d", &bur_ti[i]); 
-            temp[i] = bur_ti[i];
-      } 
-      printf("\nEnter Time Quantum:\t"); 
-      scanf("%d", &time_quantum); 
-      printf("\nProcess ID\t\tBurst Time\t Turnaround Time\t Waiting Time\n");
-      for(total = 0, i = 0; x != 0;) 
-      { 
-            if(temp[i] <= time_quantum && temp[i] > 0) 
-            { 
-                  total = total + temp[i]; 
-                  temp[i] = 0; 
-                  counter = 1; 
-            } 
-            else if(temp[i] > 0) 
-            { 
-                  temp[i] = temp[i] - time_quantum; 
-                  total = total + time_quantum; 
-            } 
-            if(temp[i] == 0 && counter == 1) 
-            { 
-                  x--; 
-                  printf("\nProcess[%d]\t\t%d\t\t %d\t\t\t %d", i + 1, bur_ti[i], total - arr_ti[i], total - arr_ti[i] - bur_ti[i]);
-                  wa_ti = wa_ti + total - arr_ti[i] - bur_ti[i]; 
-                  tu_ti = tu_ti + total - arr_ti[i]; 
-                  counter = 0; 
-            } 
-            if(i == n - 1) 
-            {
-                  i = 0; 
-            }
-            else if(arr_ti[i + 1] <= total) 
-            {
-                  i++;
-            }
-            else 
-            {
-                  i = 0;
-            }
-      } 
-      avg_wa_ti = wa_ti * 1.0 / n;
-      average_tu_ti = tu_ti * 1.0 / n;
-      printf("\n\nAverage Waiting Time:\t%f", avg_wa_ti); 
-      printf("\nAvg Turnaround Time:\t%f\n", average_tu_ti); 
-      return 0; 
-  }
-	  
-
+#include<stdio.h>
+ 
+int main()
+{
+    int bt[20],p[20],wt[20],tat[20],pr[20],i,j,n,total=0,pos,temp,avg_wt,avg_tat;
+    printf("Enter Total Number of Process:");
+    scanf("%d",&n);
+ 
+    printf("\nEnter Burst Time and Priority\n");
+    for(i=0;i<n;i++)
+    {
+        printf("\nP[%d]\n",i+1);
+        printf("Burst Time:");
+        scanf("%d",&bt[i]);
+        printf("Priority:");
+        scanf("%d",&pr[i]);
+        p[i]=i+1;           //contains process number
+    }
+ 
+    //sorting burst time, priority and process number in ascending order using selection sort
+    for(i=0;i<n;i++)
+    {
+        pos=i;
+        for(j=i+1;j<n;j++)
+        {
+            if(pr[j]<pr[pos])
+                pos=j;
+        }
+ 
+        temp=pr[i];
+        pr[i]=pr[pos];
+        pr[pos]=temp;
+ 
+        temp=bt[i];
+        bt[i]=bt[pos];
+        bt[pos]=temp;
+ 
+        temp=p[i];
+        p[i]=p[pos];
+        p[pos]=temp;
+    }
+ 
+    wt[0]=0;    //waiting time for first process is zero
+ 
+    //calculate waiting time
+    for(i=1;i<n;i++)
+    {
+        wt[i]=0;
+        for(j=0;j<i;j++)
+            wt[i]+=bt[j];
+ 
+        total+=wt[i];
+    }
+ 
+    avg_wt=total/n;      //average waiting time
+    total=0;
+ 
+    printf("\nProcess\t    Burst Time    \tWaiting Time\tTurnaround Time");
+    for(i=0;i<n;i++)
+    {
+        tat[i]=bt[i]+wt[i];     //calculate turnaround time
+        total+=tat[i];
+        printf("\nP[%d]\t\t  %d\t\t    %d\t\t\t%d",p[i],bt[i],wt[i],tat[i]);
+    }
+ 
+    avg_tat=total/n;     //average turnaround time
+    printf("\n\nAverage Waiting Time=%d",avg_wt);
+    printf("\nAverage Turnaround Time=%d\n",avg_tat);
+ 
+    return 0;
+}
